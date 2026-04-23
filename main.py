@@ -1,28 +1,21 @@
 import torch
+import argparse
 from clearml import Task
 
 def main():
-    # 1. ClearMLタスクの初期化
-    task = Task.init(project_name="GPU_Test_Project", task_name="uv_gpu_check")
-    
-    # 2. 実行時に使うDockerイメージを指定（後でビルドするイメージ名）
-    task.set_base_docker(
-        docker_image="clearml_gpu_test_image",
-        # ClearMLによる自動pip installをスキップ
-        docker_setup_bash_script="echo 'Using uv pre-built environment'" 
-    )
+    # 引数の受け取り（CLIから上書き可能）
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset-id', type=str, default='default_id')
+    args = parser.parse_args()
 
-    # 3. GPUの認識チェック
-    print("=== GPU Availability Check ===")
-    is_available = torch.cuda.is_available()
-    print(f"CUDA Available: {is_available}")
+    # 1. タスクの初期化
+    task = Task.init(project_name="My_GPU_Project", task_name="uv_remote_run")
     
-    if is_available:
-        print(f"Device Name: {torch.cuda.get_device_name(0)}")
-        print(f"Device Count: {torch.cuda.device_count()}")
-    else:
-        print("No GPU detected. Running on CPU.")
-    print("==============================")
+    # 2. 実際の処理（GPU確認テスト）
+    print(f"Dataset ID: {args.dataset_id}")
+    print(f"CUDA Available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"GPU Name: {torch.cuda.get_device_name(0)}")
 
 if __name__ == "__main__":
     main()
