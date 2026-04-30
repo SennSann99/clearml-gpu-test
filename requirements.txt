@@ -1,0 +1,3 @@
+# requirements.txt
+clearml>=1.16.0
+torch>=2.2.0
